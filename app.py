@@ -6,7 +6,7 @@ import asyncio
 from scraper import scrape_emails_from_url
 
 app = Flask(__name__)
-CORS(app, origins="*") 
+CORS(app, origins="*")  # En prod, remplace "*" par l'URL de ton frontend
 
 @app.route('/api/scrape', methods=['POST'])
 def scrape():
@@ -18,7 +18,6 @@ def scrape():
 
         emails = asyncio.run(scrape_emails_from_url(url))
 
-        # ✅ Convertir le CSV texte en fichier binaire avec BytesIO
         mem = BytesIO()
         writer = csv.writer(TextIOWrapper(mem, encoding='utf-8', newline=''))
         writer.writerow(['Email'])
@@ -38,4 +37,5 @@ def scrape():
         return {'error': str(e)}, 500
 
 if __name__ == '__main__':
-    app.run(port=5000, debug=True)
+    # En local, tu peux lancer avec debug=True
+    app.run(host='0.0.0.0', port=5000, debug=True)
