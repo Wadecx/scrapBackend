@@ -6,7 +6,10 @@ import asyncio
 from scraper import scrape_emails_from_url
 
 app = Flask(__name__)
-CORS(app, origins="https://scrap-frontend-tan.vercel.app")  # En prod, remplace "*" par l'URL de ton frontend
+CORS(app, origins=[
+    "http://localhost:3000",
+    "https://scrap-frontend-tan.vercel.app"
+])
 
 @app.route('/api/scrape', methods=['POST'])
 def scrape():
