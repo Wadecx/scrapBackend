@@ -3,5 +3,5 @@
 # Installer les dépendances Python
 pip install -r requirements.txt
 
-# Installer Chromium pour Playwright
-playwright install chromium
+# Installer les navigateurs nécessaires à Playwright avec les bonnes dépendances système
+playwright install --with-deps
