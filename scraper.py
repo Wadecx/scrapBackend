@@ -12,18 +12,6 @@ EMAIL_REGEX = r"[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+"
 async def extract_emails_from_text(text):
     return list(set(re.findall(EMAIL_REGEX, text)))
 
-async def extract_emails_from_mailto_links(html):
-    soup = BeautifulSoup(html, "html.parser")
-    mailto_links = soup.select('a[href^=mailto]')
-    emails = set()
-    for link in mailto_links:
-        href = link.get('href')
-        if href:
-            email = href.replace("mailto:", "").split("?")[0]
-            if re.match(EMAIL_REGEX, email):
-                emails.add(email)
-    return list(emails)
-
 async def extract_emails_from_response(response):
     try:
         content_type = response.headers.get("content-type", "")
@@ -40,11 +28,7 @@ async def extract_emails_from_response(response):
 async def extract_emails_from_html(page):
     html = await page.content()
     soup = BeautifulSoup(html, "html.parser")
-
-    text_emails = await extract_emails_from_text(soup.get_text())
-    mailto_emails = await extract_emails_from_mailto_links(html)
-
-    return list(set(text_emails + mailto_emails))
+    return await extract_emails_from_text(soup.get_text())
 
 async def scrape_emails_from_url(url):
     emails_found = set()
