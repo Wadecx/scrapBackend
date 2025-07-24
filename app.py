@@ -1,15 +1,17 @@
 from flask import Flask, request, send_file
 from flask_cors import CORS
-from io import BytesIO, TextIOWrapper
+from io import BytesIO, StringIO
 import csv
 import asyncio
 from scraper import scrape_emails_from_url
 
 app = Flask(__name__)
-CORS(app, origins=[
+
+# ✅ Fix CORS pour que ça fonctionne en prod (Render + Vercel)
+CORS(app, resources={r"/api/*": {"origins": [
     "http://localhost:3000",
-    "https://scrap-frontend-phi.vercel.app/"
-])
+    "https://scrap-frontend-phi.vercel.app"
+]}})
 
 @app.route('/api/scrape', methods=['POST'])
 def scrape():
@@ -21,11 +23,16 @@ def scrape():
 
         emails = asyncio.run(scrape_emails_from_url(url))
 
-        mem = BytesIO()
-        writer = csv.writer(TextIOWrapper(mem, encoding='utf-8', newline=''))
+        # ✅ On écrit d'abord dans un StringIO (texte)
+        output = StringIO()
+        writer = csv.writer(output)
         writer.writerow(['Email'])
         for email in emails:
             writer.writerow([email])
+
+        # ✅ Puis on convertit proprement en BytesIO (binaire)
+        mem = BytesIO(output.getvalue().encode('utf-8'))
+        output.close()
         mem.seek(0)
 
         return send_file(
@@ -40,5 +47,5 @@ def scrape():
         return {'error': str(e)}, 500
 
 if __name__ == '__main__':
-    # En local, tu peux lancer avec debug=True
+    # Pour le mode local
     app.run(host='0.0.0.0', port=5000, debug=True)
