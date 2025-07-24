@@ -8,8 +8,7 @@ from scraper import scrape_emails_from_url
 app = Flask(__name__)
 CORS(app, origins=[
     "http://localhost:3000",
-    "https://scrap-frontend-tan.vercel.app",
-    "https://scrap-frontend-git-master-wadecxs-projects.vercel.app/"
+    "https://scrap-frontend-phi.vercel.app/"
 ])
 
 @app.route('/api/scrape', methods=['POST'])
